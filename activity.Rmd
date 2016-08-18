@@ -1,0 +1,50 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+```{R}
+library(dplyr)
+library(lubridate)
+activity  <- read.csv("activity.csv", header=TRUE, 
+                      colClasses=c("numeric", "character", "integer"))
+activity$date  <- ymd(activity$date)
+
+```
+
+## What is mean total number of steps taken per day?
+
+```{R}
+library(ggplot2)
+
+steps <- activity %>%
+    filter(!is.na(steps)) %>%
+    group_by(date) %>%
+    summarize(steps = sum(steps)) %>%
+    print()
+
+ggplot(steps, aes(x=steps)) + geom_histogram(fill="royalblue2", binwidth=1000) +
+    labs(title="Histogram", x="Steps Per Day", y="N") 
+
+steps_mean <- mean(steps$steps, na.rm = TRUE)
+steps_med <- median(steps$steps, na.rm = TRUE)
+
+print(c("Mean Steps:", steps_mean))
+print(c("Median Steps:", steps_med))
+```
+
+
+## What is the average daily activity pattern?
+
+
+
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
