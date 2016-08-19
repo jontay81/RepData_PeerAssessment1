@@ -89,3 +89,31 @@ print(c("Difference in Median Steps With Impute:", steps_medNA - steps_med))
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{R}
+
+activityNA$date  <- as.Date(activityNA$date) #convert to date form char
+
+activityNA <- mutate(activityNA, weektype=ifelse(weekdays(activityNA$date) == "Saturday" 
+                                                 | weekdays(activityNA$date) == "Sunday", 
+                                                 "weekend", "weekday"))
+
+activityNA$weektype <- as.factor(activityNA$weektype)
+
+meanStepsPerIntervalNA <- activityNA %>%
+  group_by(interval, weektype) %>%
+  summarise(steps = mean(steps))
+
+ggplot(meanStepsPerIntervalNA, aes(x=interval, y=steps, color=weektype)) + 
+    geom_line() +
+    facet_wrap(~weektype, ncol=1, nrow=2)
+```
+
+
+
+
+
+
+
+
+
