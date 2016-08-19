@@ -41,10 +41,51 @@ print(c("Median Steps:", steps_med))
 
 ## What is the average daily activity pattern?
 
+```{R}
+meanStepsPerInterval <- activity %>%
+    filter(!is.na(steps)) %>%
+    group_by(interval) %>%
+    summarize(steps=mean(steps))
+
+ggplot(meanStepsPerInterval, aes(x=interval, y=steps)) + geom_line(color="forestgreen")
+
+meanStepsPerInterval[which.max(meanStepsPerInterval$steps),]
+```
 
 
 ## Imputing missing values
 
+```{R}
+
+activityNA <- activity 
+
+#impute NA values with mean steps for that interval
+for(i in 1:nrow(activityNA)){
+    if(is.na(activityNA[i,"steps"])){
+        activityNA[i,"steps"] <-
+            meanStepsPerInterval[meanStepsPerInterval$interval==activityNA$interval[i],"steps"]
+    }
+}
+
+stepsNA <- activityNA %>%
+    filter(!is.na(steps)) %>%
+    group_by(date) %>%
+    summarize(steps = sum(steps)) %>%
+    print()
+
+ggplot(stepsNA, aes(x=steps)) + geom_histogram(fill="royalblue3", binwidth=1000) +
+    labs(title="Histogram", x="Steps Per Day", y="N") 
+
+steps_meanNA <- mean(stepsNA$steps, na.rm = TRUE)
+steps_medNA <- median(stepsNA$steps, na.rm = TRUE)
+
+print(c("Mean Steps:", steps_meanNA))
+print(c("Median Steps:", steps_medNA))
+
+print(c("Difference in Mean Steps With Impute:", steps_meanNA - steps_mean))
+print(c("Difference in Median Steps With Impute:", steps_medNA - steps_med))
+
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
